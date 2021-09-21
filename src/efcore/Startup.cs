@@ -20,7 +20,7 @@ namespace intro
         public void ConfigureServices(IServiceCollection services)
         {
             services
-                .AddPooledDbContextFactory<wwiCtx>(ob => ob.UseSqlServer(System.Environment.GetEnvironmentVariable("CONNSTR")));
+                .AddPooledDbContextFactory<wwiCtx>(ob => {ob.UseSqlServer(System.Environment.GetEnvironmentVariable("CONNSTR")); ob.LogTo(Console.WriteLine);});
             services
                 .AddGraphQLServer()
                 .AddFiltering()

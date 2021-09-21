@@ -13,12 +13,12 @@ namespace intro
         [UseFiltering]
         [UseSorting]
         public IQueryable<Customer> GetCustomers([ScopedService]wwiCtx db) => 
-                db.Customers;
+                db.Customers.AsNoTracking().OrderBy(c => c.CustomerID);
 
         [UseDbContext(typeof(wwiCtx))]
         public IQueryable<Order> GetOrder([ScopedService]wwiCtx db, int orderID)
         {
-            return db.Orders.Include("OrderLines").Include("Customer").Where(o => o.OrderID == orderID);
+            return db.Orders.AsNoTracking().Include("OrderLines").Include("Customer").Where(o => o.OrderID == orderID);
         }
     }
 }
