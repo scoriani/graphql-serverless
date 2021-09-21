@@ -2860,11 +2860,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/scoriani/repos/graphql-serverless/src/intro/intro.csproj",
-      "projectName": "intro",
-      "projectPath": "/home/scoriani/repos/graphql-serverless/src/intro/intro.csproj",
+      "projectUniqueName": "/home/scoriani/repos/graphql-serverless/src/efcore/efcore.csproj",
+      "projectName": "efcore",
+      "projectPath": "/home/scoriani/repos/graphql-serverless/src/efcore/efcore.csproj",
       "packagesPath": "/home/scoriani/.nuget/packages/",
-      "outputPath": "/home/scoriani/repos/graphql-serverless/src/intro/obj/",
+      "outputPath": "/home/scoriani/repos/graphql-serverless/src/efcore/obj/",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "/usr/share/dotnet/sdk/NuGetFallbackFolder"
