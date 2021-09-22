@@ -5,10 +5,10 @@ name: CI
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  #push:
+  #  branches: [ main ]
+  #pull_request:
+  #  branches: [ main ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -34,3 +34,23 @@ jobs:
         run: |
           echo Add other actions to build,
           echo test, and deploy your project.
+      
+      - name: Deploy Azure Resource Manager (ARM) Template
+        uses: Azure/arm-deploy@1.0.4
+        with:
+          # Provide the scope of the deployment. Valid values are: 'resourcegroup', 'managementgroup', 'subscription'
+          scope: resourcegroup
+          # Override the Subscription Id set by Azure Login.
+          subscriptionId: fa58cf66-caaf-4ba9-875d-f310d3694845
+          # Provide the target region, only required for management Group or Subscription deployments.
+          region: westeurope
+          # Provide the name of a resource group, only required for resource Group deployments.
+          resourceGroupName: graphql-serverless
+          # Specify the path or URL to the Azure Resource Manager template.
+          template: 
+          # Incremental (only add resources to resource group) or Complete (remove extra resources from resource group) or Validate (only validates the template).
+          deploymentMode: Incremental
+          # Specifies the name of the resource group deployment to create.
+          deploymentName: srvless
+          # Supply deployment parameter values.
+          parameters: # optional
