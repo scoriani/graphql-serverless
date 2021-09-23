@@ -1,0 +1,246 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "sqlServerAdminLogin": {
+        "type": "string",
+        "minLength": 1,
+        "metadata": {
+          "description": "The SQL server admin username."
+        }
+      },
+      "sqlServerAdminLoginPassword": {
+        "type": "string",
+        "metadata": {
+          "description": "The SQL server admin password"
+        }
+      },
+      "sqlServerName": {
+        "type": "string",
+        "minLength": 1,
+        "metadata": {
+          "description": "The SQL logical server name"
+        }
+      },
+        "sqlDatabaseName": {
+          "type": "string",
+          "minLength": 1,
+          "metadata": {
+            "description": "The SQL database name"
+          }
+      },
+      "mincores": {
+        "type": "string"
+      },
+      "maxcores": {
+        "type": "int"
+      },
+      "maxsize": {
+        "type": "int"
+      },
+      "autopause": {
+        "type": "int"
+      },
+      "functionName": {
+            "type": "string",
+            "metadata": {
+                "description": "Function App name"
+            }
+        },
+        "hostingPlanName": {
+            "type": "string",
+            "metadata": {
+                "description": "hosting plan name"
+            }
+        },
+        "storageAccountName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the strage account"
+            }   
+        },
+        "linuxFxVersion": {
+            "type": "string",
+            "defaultValue": "DOTNET-ISOLATED|5.0",
+            "metadata": {
+                "description": "linuxFxVersion that specify the language runtime for linux. (Java|8) for example"
+            }               
+        },
+        "alwaysOn": {
+            "type": "bool",
+            "defaultValue": true,
+            "metadata": {
+                "description": "Always On (true/false)"
+            }
+        },
+        "sku": {
+            "type": "string",
+            "defaultValue": "Premium",
+             "metadata": {
+                "description": "sku"
+            }             
+        },
+        "skuCode": {
+            "type": "string",
+            "defaultValue": "P1v2",
+            "metadata": {
+                "description": "skuCode"
+            }   
+        },
+        "appInsightsName": {
+            "type": "string",
+            "metadata": {
+                "description": "the name of application insights"
+            }
+        }
+    },
+  
+    "resources": [
+        {
+            "name": "[parameters('sqlServerName')]",
+            "type": "Microsoft.Sql/servers",
+            "apiVersion": "2020-02-02-preview",
+            "location": "[resourceGroup().location]",
+            "properties": {
+            "administratorLogin": "[parameters('sqlServerAdminLogin')]",
+            "administratorLoginPassword": "[parameters('sqlServerAdminLoginPassword')]",
+            "version": "12.0",
+            "minimalTlsVersion": "1.2"
+            },
+            "resources": [
+                {
+                    "name": "[parameters('sqlDatabaseName')]",
+                    "type": "databases",
+                    "location": "[resourceGroup().location]",
+                    "apiVersion": "2020-02-02-preview",          
+                    "sku": {
+                        "name": "GP_S_Gen5",
+                        "tier": "GeneralPurpose",
+                        "family": "Gen5",
+                        "capacity": "[parameters('maxcores')]"
+                    },
+                    "kind": "v12.0,user,vcore,serverless",
+                    "dependsOn": [
+                        "[concat('Microsoft.Sql/servers/', parameters('sqlServerName'))]"
+                    ],
+                    "properties": {
+                        "collation": "SQL_Latin1_General_CP1_CI_AS",
+                        "maxSizeBytes": "[parameters('maxsize')]",
+                        "catalogCollation": "SQL_Latin1_General_CP1_CI_AS",
+                        "zoneRedundant": false,
+                        "readScale": "Disabled",
+                        "autoPauseDelay": "[parameters('autopause')]",
+                        "storageAccountType": "GRS",
+                        "minCapacity": "[float(parameters('mincores'))]"
+                    }
+                },
+                {
+                    "type": "Microsoft.Sql/servers/firewallRules",
+                    "apiVersion": "2021-02-01-preview",
+                    "name": "[format('{0}/{1}', parameters('sqlServerName'), 'AllowAllWindowsAzureIps')]",
+                    "properties": {
+                        "endIpAddress": "255.255.255.254",
+                        "startIpAddress": "1.1.1.1"
+                    },
+                    "dependsOn": [
+                        "[concat('Microsoft.Sql/servers/', parameters('sqlServerName'))]"
+                    ]
+                }
+            ]
+        },
+         {
+            "apiVersion": "2018-11-01",
+            "name": "[parameters('functionName')]",
+            "type": "Microsoft.Web/sites",
+            "kind": "functionapp,linux",
+            "location": "[resourceGroup().location]",
+            "tags": {},
+            "dependsOn": [
+                "[resourceId('microsoft.insights/components', parameters('appInsightsName'))]",
+                "[resourceId('Microsoft.Web/serverfarms', parameters('hostingPlanName'))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+            ],
+            "properties": {
+                "name": "[parameters('functionName')]",
+                "siteConfig": {
+                    "linuxFxVersion": "[parameters('linuxFxVersion')]",
+                    "alwaysOn": "[parameters('alwaysOn')]",
+                    "appSettings": [
+                        {
+                            "name": "FUNCTIONS_EXTENSION_VERSION",
+                            "value": "~3"
+                        },
+                        {
+                            "name": "FUNCTIONS_WORKER_RUNTIME",
+                            "value": "dotnet-isolated"
+                        },
+                        {
+                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                            "value": "[reference(concat('microsoft.insights/components/', parameters('appInsightsName')), '2015-05-01').InstrumentationKey]"
+                        },
+                        {
+                            "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
+                            "value": "[reference(concat('microsoft.insights/components/', parameters('appInsightsName')), '2015-05-01').ConnectionString]"
+                        },
+                        {
+                            "name": "AzureWebJobsStorage",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2019-06-01').keys[0].value,';EndpointSuffix=','core.windows.net')]"
+                        },
+                        {
+                            "name": "APPINSIGHTS_ENABLE_IN_PROC_AGENT",
+                            "value": "true"
+                        },
+                        {
+                            "name": "ApplicationInsightsAgent_EXTENSION_VERSION",
+                            "value": "~2"
+                        }
+                    ]
+                },
+                "serverFarmId": "[concat('/subscriptions/', subscription().subscriptionId,'/resourcegroups/', resourceGroup().name, '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
+                "clientAffinityEnabled": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/serverfarms",
+            "apiVersion": "2018-02-01",
+            "name": "[parameters('hostingPlanName')]",
+            "location": "[resourceGroup().location]",
+            "kind": "Linux",
+            "sku": {
+                "tier": "[parameters('sku')]",
+                "name": "[parameters('skuCode')]"
+            },
+            "properties": {
+                "reserved": true
+            }
+        },
+        {
+            "apiVersion": "2015-05-01",
+            "name": "[parameters('appInsightsName')]",
+            "type": "Microsoft.Insights/components",
+            "kind": "web",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "[concat('hidden-link:', resourceGroup().id, '/providers/Microsoft.Web/sites/', parameters('functionName'))]": "Resource"
+            },
+            "properties": {
+                "Application_Type": "web",
+                "ApplicationId": "[parameters('functionName')]"
+            }
+        },
+        {
+            "apiVersion": "2019-06-01",
+            "type": "Microsoft.Storage/storageAccounts",
+            "name": "[parameters('storageAccountName')]",
+            "location": "[resourceGroup().location]",
+            "kind": "StorageV2",
+            "tags": {},
+            "sku": {
+                "name": "Standard_LRS"
+            },
+            "properties": {
+                "supportsHttpsTrafficOnly": true
+            }
+        }
+     ]
+  }

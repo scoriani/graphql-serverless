@@ -1,0 +1,4 @@
+[ZoneTransfer]
+ZoneId=3
+ReferrerUrl=https://github.com/Microsoft/sql-server-samples/releases/tag/wide-world-importers-v1.0
+HostUrl=https://github-releases.githubusercontent.com/53698446/c0a84048-2d71-11e6-8241-560256ebf6a7?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20210922%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20210922T094556Z&X-Amz-Expires=300&X-Amz-Signature=e3832ea12a472833f58797fbdd14d8251615e66c844bcc26ff313e7e1c7ed58a&X-Amz-SignedHeaders=host&actor_id=1290582&key_id=0&repo_id=53698446&response-content-disposition=attachment%3B%20filename%3DWideWorldImporters-Standard.bacpac&response-content-type=application%2Foctet-stream

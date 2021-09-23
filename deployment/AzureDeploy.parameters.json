@@ -1,0 +1,42 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "sqlServerAdminLogin": {
+            "value": ""
+        },
+        "sqlServerAdminLoginPassword": {
+            "value": ""
+        },
+        "sqlServerName": {
+            "value": ""
+        },
+        "sqlDatabaseName": {
+            "value": "WideWorldImporters"
+        },
+        "mincores": {
+            "value": "0.75"
+        },
+        "maxcores": {
+            "value": 6 
+        },
+        "maxsize": {
+            "value": 2147483648 
+        },
+        "autopause": {
+            "value": 60 
+        },
+        "appInsightsName": {
+            "value": "graphql-serverless"
+        },
+        "storageAccountName": {
+            "value": "scorianigraphqlless"
+        },
+        "hostingPlanName": {
+            "value": "graphql-serverless"
+        },
+        "functionName": {
+            "value": "graphql-serverless-func"
+        }
+    }
+}
