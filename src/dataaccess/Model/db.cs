@@ -44,7 +44,7 @@ namespace dataaccess
             
                 var parameters = new DynamicParameters(new {OrderLineID=input.OrderLineID, OrderID=input.OrderID, StockItemID=input.StockItemID, Quantity= input.Quantity });
 
-                string cmd = @"INSERT INTO Sales.OrderLines (OrderLineID, OrderID, StockItemID, Quantity) VALUES (@OrderLineID, @OrderID, @StockItemID, @Quantity);
+                string cmd = @"INSERT INTO Sales.OrderLines (OrderLineID, OrderID, StockItemID, Quantity,[Description],[PackageTypeID],[UnitPrice],[TaxRate],[PickedQuantity],[LastEditedBy]) VALUES (@OrderLineID, @OrderID, @StockItemID, @Quantity,'',7,11.2,15.00,12,4);
                                SELECT OrderLineID, OrderID, StockItemID, Quantity FROM Sales.OrderLines WHERE OrderLineID = @OrderLineID";
                 
                 var ordln = cnn.Query<OrderLine>(cmd, parameters).SingleOrDefault();

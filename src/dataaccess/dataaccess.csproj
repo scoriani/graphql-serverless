@@ -11,7 +11,7 @@
     <PackageReference Include="HotChocolate.AspNetCore" Version="12.0.0-rc.11" />
     <PackageReference Include="HotChocolate.AspNetCore.Authorization" Version="12.0.0-rc.11" />
     <PackageReference Include="HotChocolate.Data" Version="12.0.0-rc.11" />
-    <PackageReference Include="Microsoft.Data.SqlClient" Version="3.0.0" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="4.0.0-preview2.21264.2" />
   </ItemGroup>
 
 </Project>
